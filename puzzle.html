@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="puzzle.css">
+    <title>Mon jeu de puzzle</title>
+</head>
+<body>
+    <h1>Puzzle par détection de geste</h1>
+    <p>
+        1. Pince le pouce et l'index pour prendre une photo <br>
+        2. Déplace l'index pour bouger les pièces du puzzle
+    </p>
+    <div class="container">
+        <!-- Strem de la camera -->
+         <div class="video-box">
+            <video src="" id="webcam" autoplay playsinline></video>
+         </div>
+         <div class="game-box" id="game-zone">
+            <div id="puzzle-board"></div>
+            <div id="handcursor"></div>
+         </div>
+    </div>
+
+    <div class="status-badge" id="status"> Chargement par MediaPipe</div>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const videoElement = document.getElementById('webcam')
+const puzzleBoard = document.getElementById('puzzle-board')
+const handCursor = document.getElementById('hand-cursor')
+const statusDiv = document.getElementById('status')
+const gameZone = document.getElementById('game-zone')
+
+let gameStarted = false
+let boardState = []
+let emptyIndex = 8
+let lastMoveTime = 0
+
+const captureCanvas = document.createElement('canvas');
+captureCanvas.width = 400;
+captureCanvas.height = 300;
+const captureCtx = captureCanvas.getContext('2d');
+
+const hands = new Hands({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+})
+
+hands.setOptions({
+    maxNumHands : 1,
+    modelComplexity : 1,
+    minDetectionConfidence : 0.7,
+    minTrackingConfidence : 0.7
+})
+
+hands.onResults(onResults);
+
+const camera = new Camera(videoElement, {
+    onFrame: async () =>{
+        await hands.send({image: videoElement});
+    },
+    width : 400,
+    height : 300
+});
+
+camera.start().then(() => {
+    statusDiv.innerText = "Fais un pincement (Pouce + Index) pour capturer la photo !"
+})
+
+function onResults(results){
+    if(!results.multiHandLandmarks || results.multiHandLandmarks.length === 0){
+        handCursor.style.display = 'none'
+        return;
+    }
+
+    const landmarks = results.multiHandLandmarks[0]
+
+    const thumbTip = landmarks[4]
+    const indexTip = landmarks[8]
+
+    const distance = Math.hypot(thumbTip.x - indexTip.x, thumbTip.y -indexTip.y)
+
+    if(distance < 0.05 && !gameStarted){
+        takeSnapshotAndStartPuzzle()
+    }
+
+    if(gameStarted){
+        handCursor.style.display = 'block'
+    
+
+        const cursorX = (1 - indexTip.x)
+        const cursorY = indexTip.y * gameZone.clientHeight
+
+        handCursor.style.left = `${cursorX}px`
+        handCursor.style.top = `${cursorY}px`
+
+        const now = Date.now()
+        if(now - lastMoveTime > 800){
+            checkCursorTileInteraction(cursorX, cursorY)
+        }
+    }
+}
+
+function takeSnapshotAndStartPuzzle(){
+    gameStarted = true
+    statusDiv.innerText = "Photo capturé avec succès! deplace ton index usr une  pièce adjacente ) la case vide."
+
+    captureCtx.save()
+    captureCtx.scale(-1, 1)
+    captureCtx.drawImage(videoElement, -400, 0, 400, 300)
+    captureCtx.restore()
+
+    const imageDataUrl = captureCanvas.toDataUrl('image/png')
+
+    boardState = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    emptyIndex = 8
+
+    shuffleBoard()
+    renderBoard(imageDataUrl)
+}
+
+function shuffleBoard(){
+    for(let i = 0; i< 20; i++){
+        const validMoves = getValidMoves(emptyIndex)
+        const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)]
+        [boardState[emptyIndex], boardState[randomMove]] = [boardState[randomMove], boardState[emptyIndex]]
+        emptyIndex = randomMove
+    }
+}
+
+function renderBoard(imgSrc){
+    puzzleBoard.innerHTML = ''
+    boardState.forEach((pieceId, index) => {
+        const tile = document.createElement('div')
+        tile.classList.add('tile')
+        tile.dataset.index = index
+
+        if (pieceId === 8){
+            tile.classList.add('empty')
+        }else{
+            tile.style.backgroundImage = `url($imgSrc)`
+            const origX = (pieceId % 3) * 133
+            const origY = Math.floor(piece / 3) * 100
+            tile.style.backgroundPosition = `-${origX}px - ${origY}px`
+        }
+        puzzleBoard.appendChild(tile)
+    })
+}
+
+function checkCursorTileInteraction(x, y){
+    const rect = gameZone.getBoundingClientRect()
+    const col = Math.floor(x / (rect.width / 3))
+    const row = Math.floor(y / (rect.height / 3))
+    const tileIndex = row * 3 + col
+
+    if (tileIndex >= 0 && tileIndex < 9 && getValidMoves(emptyIndex).includes(tileIndex)){
+        [boardState[emptyIndex], boardState[tileIndex]] = [boardState[tileIndex], boardState[emptyIndex]]
+        emptyIndex = tileIndex
+        lastMoveTime = Date.now()
+
+        const currentImg = captureCanvas.toDataUrl('image/png')
+        renderBoard(currentImg)
+    };
+}
+
+function getValidMoves(emptyIdx){
+    const moves = []
+    const row = Math.floor(emptyIdx / 3)
+    const col = emptyIdx % 3
+
+    if(row > 0) moves.push(emptyIdx - 3)
+    if(row < 2) moves.push(emptyIdx + 3)
+    if(col > 2) moves.push(emptyIdx - 1)
+    if(col < 2) moves.push(emptyIdx + 1)
+    return moves;
+}
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+header{
+    display : flex;
+    align-items : center;
+    justify-content : center;
+    font-family : arial;
+    margin: 50px auto;
+    height: 80px;
+    width: 90%;
+    border: 1px solid #000;
+    background: black;
+    color: white;
+    border-radius: 30px;
+    padding: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+ul{
+    display : flex;
+    gap : 10px;
+}
+
+li{
+    list-style : none;
+    margin: 20px;
+}
+
+a{
+    text-decoration: none;
+    font-size: 25px;
+    color: white;
+}
+
+/* .nav-bar a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -5px;
+        width: 0;
+        height: 2px;
+        background-color: white;
+        transition: width 0.5s ease;
+    }
+
+    .nav-bar a:hover::after {
+        width: 100%;
+    } */
+
+a::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0;
+    height: 2px;
+    background-color: #ccc;
+    transition: width 0.5s ease;
+}
+
+a:hover::after{
+    width: 100%;
+}
+
+input{
+    padding: 10px;
+    height: 50px;
+    width: 400px;
+    margin: 10px;
+    border-radius: 30px;
+    outline: none;
+}
+
+input[type="search"]{
+    font-size: 25px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: 400;
+    font-style: unset;
+}
+
+.connexion{
+    padding: 5px;
+    height: 40px;
+    width: 130px;
+    background: transparent;
+    border: 2px solid #ccc;
+    color: #ccc;
+}
+
+
+/*Ma carte*/
+
+.div-card{
+    opacity: 0;
+    transform: translateY(300px);
+
+    transition: opacity 1s ease, transform 1s ease;
+    height: 400px;
+    width: 700px;
+    background-color: #000;
+    border: 1px solid #ccc;
+    margin: 100px auto;
+    border-radius: 20px;
+    background: radial-gradient(circle at top left, white, black);
+    display: flex;
+    padding: 10px;
+    gap: 20px;
+    justify-content: space-between;
+    align-content: center;
+    color: antiquewhite;
+    box-shadow: 0 0 20px 20px rgba(0, 0, 0, 0.9), 
+                0 0 10px 50px rgba(255, 255, 255, 0.6),
+                0 10px 20px 20px rgba(255, 255, 255, 0.6),
+                10px 0 20px 30px rgba(255, 10, 56, 0.8);
+    animation: danse 10s ease-in-out infinite;
+}
+
+@keyframes danse {
+    0%{transform: translateY(0);}
+    50%{transform: translateY(50px);}
+    100%{transform: translateY(0);}
+}
+
+.img{
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+
+    background: url("fd4.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    object-fit: cover;
+    margin: auto auto;
+}
+
+.infos{
+    margin: auto auto;
+    align-items: center;
+    justify-content: center;
+}
+
+#btn{
+    padding: 15px;
+    width: 150px;
+    border: 1px solid #ccc;
+    color: white;
+    background: transparent;
+    font-size: 15px;
+    font-weight: bold;
+    box-shadow: 0 0 20px 1px rgba(255, 255, 255, 0.6);
+}
+
+#btn:hover{
+    background: white;
+    color: black;
+    border: 1px solid black;
+    transition: 1s ease-in-out;
+}
+
+.div-card.Emmanuel{
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/*Deuxieme carte*/
+
+.carte{
+    height: 500px;
+    width: 800px;
+    border-radius: 20px;
+    border: 1px solid #000;
+    box-shadow: 0 10px 30px 10px rgba(0, 0, 0, 0.9);
+    margin: auto auto;
+    background: linear-gradient(45deg, rgb(229, 229, 233), rgb(166, 166, 243));
+    position: relative;
+    overflow: hidden;
+}
+
+.un{
+    height: 70px;
+    width: 100%;
+    margin: 30px auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.un-un{
+    height: 100%;
+    width: 300px;
+    background-color: aqua;
+}
+
+.un-un div{
+    width: 100%;
+    background-color: red;
+}
+
+.un-de{
+    height: 100%;
+    width: 200px;
+    background-color: transparent;
+    margin: 0 10px;
+    color: aliceblue;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+}
+
+.un-tr{
+    height: 100%;
+    width: 300px;
+    background-color: chartreuse;
+}
+
+.t{
+    height: 5px;
+    width: 100%;
+    background-color: orange;
+    margin: 20px;
+}0 
